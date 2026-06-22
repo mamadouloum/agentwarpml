@@ -6,6 +6,8 @@ import { Users, GraduationCap, Wallet, ClipboardCheck, TrendingUp, AlertCircle, 
 import { PageHeader } from "@/components/page-header";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
+import { formatDistanceToNow } from "date-fns";
+import { fr } from "date-fns/locale";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   component: Dashboard,
@@ -28,6 +30,22 @@ function StatCard({ icon: Icon, label, value, hint, accent }: { icon: any; label
       </CardContent>
     </Card>
   );
+}
+
+type ActivityItem = {
+  id: string;
+  kind: "student" | "payment";
+  title: string;
+  subtitle: string;
+  at: string;
+};
+
+function timeAgo(iso: string) {
+  try {
+    return formatDistanceToNow(new Date(iso), { addSuffix: true, locale: fr });
+  } catch {
+    return "";
+  }
 }
 
 function Dashboard() {
@@ -54,6 +72,50 @@ function Dashboard() {
         totalPaid,
         attendanceRate: rate,
       };
+    },
+  });
+
+  const {
+    data: activity = [],
+    isLoading: activityLoading,
+    isError: activityError,
+  } = useQuery({
+    queryKey: ["dashboard-activity"],
+    queryFn: async () => {
+      const [students, payments] = await Promise.all([
+        supabase
+          .from("students")
+          .select("id, first_name, last_name, created_at")
+          .order("created_at", { ascending: false })
+          .limit(6),
+        supabase
+          .from("payments")
+          .select("id, amount, method, paid_at")
+          .order("paid_at", { ascending: false })
+          .limit(6),
+      ]);
+      const firstError = students.error ?? payments.error;
+      if (firstError) throw new Error(firstError.message);
+      const items: ActivityItem[] = [
+        ...(students.data ?? []).map((s) => ({
+          id: `student-${s.id}`,
+          kind: "student" as const,
+          title: `${s.last_name ?? ""} ${s.first_name ?? ""}`.trim() || "Nouvel élève",
+          subtitle: "Nouvel élève inscrit",
+          at: s.created_at,
+        })),
+        ...(payments.data ?? []).map((p) => ({
+          id: `payment-${p.id}`,
+          kind: "payment" as const,
+          title: `Paiement reçu — ${Number(p.amount).toLocaleString("fr-FR")} F`,
+          subtitle: p.method ? `Mode : ${p.method}` : "Encaissement",
+          at: p.paid_at,
+        })),
+      ];
+      return items
+        .filter((i) => i.at)
+        .sort((a, b) => new Date(b.at).getTime() - new Date(a.at).getTime())
+        .slice(0, 6);
     },
   });
 
@@ -100,14 +162,55 @@ function Dashboard() {
               Activité récente
             </CardTitle>
           </CardHeader>
-          <CardContent className="text-sm text-muted-foreground">
-            Bienvenue dans votre nouvel espace ML2 EduManager. Pour commencer :
-            <ol className="mt-4 space-y-2 text-foreground list-decimal pl-5">
-              <li>Créez votre école dans <strong>Mon école</strong>.</li>
-              <li>Ajoutez vos classes et matières.</li>
-              <li>Importez ou créez vos élèves.</li>
-              <li>Commencez à saisir notes, présences et paiements.</li>
-            </ol>
+          <CardContent className="text-sm">
+            {activityLoading ? (
+              <div className="space-y-3">
+                {Array.from({ length: 4 }).map((_, i) => (
+                  <div key={i} className="flex items-center gap-3">
+                    <Skeleton className="h-9 w-9 rounded-lg" />
+                    <div className="flex-1 space-y-1.5">
+                      <Skeleton className="h-3.5 w-1/2" />
+                      <Skeleton className="h-3 w-1/3" />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : activityError ? (
+              <p className="text-muted-foreground">Impossible de charger l'activité récente.</p>
+            ) : activity.length === 0 ? (
+              <div className="text-muted-foreground">
+                Aucune activité récente pour le moment. Pour commencer :
+                <ol className="mt-4 space-y-2 text-foreground list-decimal pl-5">
+                  <li>Créez votre école dans <strong>Mon école</strong>.</li>
+                  <li>Ajoutez vos classes et matières.</li>
+                  <li>Importez ou créez vos élèves.</li>
+                  <li>Commencez à saisir notes, présences et paiements.</li>
+                </ol>
+              </div>
+            ) : (
+              <ul className="space-y-3">
+                {activity.map((item) => (
+                  <li key={item.id} className="flex items-center gap-3">
+                    <div
+                      className={`grid h-9 w-9 shrink-0 place-items-center rounded-lg ${
+                        item.kind === "payment" ? "bg-success/10 text-success" : "bg-accent text-primary"
+                      }`}
+                    >
+                      {item.kind === "payment" ? (
+                        <Wallet className="h-4 w-4" />
+                      ) : (
+                        <Users className="h-4 w-4" />
+                      )}
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="font-medium text-foreground truncate">{item.title}</p>
+                      <p className="text-xs text-muted-foreground">{item.subtitle}</p>
+                    </div>
+                    <span className="shrink-0 text-xs text-muted-foreground">{timeAgo(item.at)}</span>
+                  </li>
+                ))}
+              </ul>
+            )}
           </CardContent>
         </Card>
         <Card className="shadow-[var(--shadow-card)]">
