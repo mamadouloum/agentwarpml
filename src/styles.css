@@ -59,9 +59,9 @@
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.18 0.04 260);
 
-  --primary: oklch(0.28 0.09 260);            /* #0f1b3d */
+  --primary: oklch(0.28 0.09 260); /* #0f1b3d */
   --primary-foreground: oklch(0.98 0.005 240);
-  --primary-glow: oklch(0.55 0.13 250);       /* #3b6fa0 */
+  --primary-glow: oklch(0.55 0.13 250); /* #3b6fa0 */
 
   --secondary: oklch(0.95 0.015 250);
   --secondary-foreground: oklch(0.28 0.09 260);
@@ -69,7 +69,7 @@
   --muted: oklch(0.96 0.01 250);
   --muted-foreground: oklch(0.48 0.03 260);
 
-  --accent: oklch(0.92 0.04 250);             /* #e8edf3 plus saturated */
+  --accent: oklch(0.92 0.04 250); /* #e8edf3 plus saturated */
   --accent-foreground: oklch(0.28 0.09 260);
 
   --destructive: oklch(0.58 0.22 25);
@@ -98,8 +98,9 @@
   /* Tokens dérivés */
   --gradient-primary: linear-gradient(135deg, oklch(0.28 0.09 260), oklch(0.55 0.13 250));
   --gradient-subtle: linear-gradient(180deg, oklch(0.985 0.005 240), oklch(0.95 0.015 250));
-  --gradient-hero: radial-gradient(ellipse at top left, oklch(0.55 0.13 250 / 0.18), transparent 60%),
-                   radial-gradient(ellipse at bottom right, oklch(0.28 0.09 260 / 0.25), transparent 60%);
+  --gradient-hero:
+    radial-gradient(ellipse at top left, oklch(0.55 0.13 250 / 0.18), transparent 60%),
+    radial-gradient(ellipse at bottom right, oklch(0.28 0.09 260 / 0.25), transparent 60%);
   --shadow-elegant: 0 10px 40px -12px oklch(0.28 0.09 260 / 0.25);
   --shadow-card: 0 1px 3px oklch(0.28 0.09 260 / 0.06), 0 4px 16px -4px oklch(0.28 0.09 260 / 0.08);
 }
@@ -126,12 +127,21 @@
 }
 
 @layer base {
-  * { border-color: var(--color-border); }
+  * {
+    border-color: var(--color-border);
+  }
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
   }
-  h1, h2, h3, h4, h5 { font-family: var(--font-display); letter-spacing: -0.02em; }
+  h1,
+  h2,
+  h3,
+  h4,
+  h5 {
+    font-family: var(--font-display);
+    letter-spacing: -0.02em;
+  }
 }

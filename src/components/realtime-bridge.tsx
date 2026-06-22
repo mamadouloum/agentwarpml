@@ -3,11 +3,24 @@ import { useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
 const TABLES = [
-  "schools", "school_subscriptions", "subscription_invoices",
-  "profiles", "user_roles", "role_permissions",
-  "classes", "students", "teacher_assignments",
-  "payments", "invoices", "attendances", "grades", "homework",
-  "announcements", "messages", "subjects", "schedules",
+  "schools",
+  "school_subscriptions",
+  "subscription_invoices",
+  "profiles",
+  "user_roles",
+  "role_permissions",
+  "classes",
+  "students",
+  "teacher_assignments",
+  "payments",
+  "invoices",
+  "attendances",
+  "grades",
+  "homework",
+  "announcements",
+  "messages",
+  "subjects",
+  "schedules",
 ];
 
 /**
@@ -20,14 +33,10 @@ export function RealtimeBridge() {
   useEffect(() => {
     const channel = supabase.channel("global-rt");
     TABLES.forEach((t) => {
-      channel.on(
-        "postgres_changes" as any,
-        { event: "*", schema: "public", table: t },
-        () => {
-          // Invalidate everything currently observed
-          qc.invalidateQueries();
-        },
-      );
+      channel.on("postgres_changes" as any, { event: "*", schema: "public", table: t }, () => {
+        // Invalidate everything currently observed
+        qc.invalidateQueries();
+      });
     });
     channel.subscribe();
     return () => {

@@ -65,7 +65,8 @@ export function useSubscriptionStatus(): SubscriptionState {
     periodEnd,
     graceEnd,
     daysLeft: periodEndMs ? Math.ceil((periodEndMs - now) / 86400000) : null,
-    graceDaysLeft: graceEndMs && expired ? Math.max(0, Math.ceil((graceEndMs - now) / 86400000)) : null,
+    graceDaysLeft:
+      graceEndMs && expired ? Math.max(0, Math.ceil((graceEndMs - now) / 86400000)) : null,
     isActive,
     isExpired: expired,
     inGrace: inGrace && statusOk,

@@ -8,8 +8,22 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { Plus, CheckCircle2, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { useCurrentSchool } from "@/hooks/use-current-school";
@@ -26,7 +40,14 @@ function YearsPage() {
   const { data: years = [] } = useQuery({
     queryKey: ["academic-years", schoolId],
     enabled: !!schoolId,
-    queryFn: async () => (await supabase.from("academic_years").select("*").eq("school_id", schoolId!).order("starts_on", { ascending: false })).data ?? [],
+    queryFn: async () =>
+      (
+        await supabase
+          .from("academic_years")
+          .select("*")
+          .eq("school_id", schoolId!)
+          .order("starts_on", { ascending: false })
+      ).data ?? [],
   });
 
   async function create(e: React.FormEvent<HTMLFormElement>) {
@@ -46,8 +67,15 @@ function YearsPage() {
   }
 
   async function setActive(id: string) {
-    await supabase.from("academic_years").update({ is_active: false }).eq("school_id", schoolId!).eq("is_active", true);
-    const { error } = await supabase.from("academic_years").update({ is_active: true }).eq("id", id);
+    await supabase
+      .from("academic_years")
+      .update({ is_active: false })
+      .eq("school_id", schoolId!)
+      .eq("is_active", true);
+    const { error } = await supabase
+      .from("academic_years")
+      .update({ is_active: true })
+      .eq("id", id);
     if (error) return toast.error(error.message);
     toast.success("Année active mise à jour");
     qc.invalidateQueries({ queryKey: ["academic-years"] });
@@ -66,16 +94,34 @@ function YearsPage() {
         description="Gérez vos années académiques et archivez les données historiques."
         action={
           <Dialog open={open} onOpenChange={setOpen}>
-            <DialogTrigger asChild><Button><Plus className="h-4 w-4 mr-2" />Nouvelle année</Button></DialogTrigger>
+            <DialogTrigger asChild>
+              <Button>
+                <Plus className="h-4 w-4 mr-2" />
+                Nouvelle année
+              </Button>
+            </DialogTrigger>
             <DialogContent>
-              <DialogHeader><DialogTitle>Créer une année scolaire</DialogTitle></DialogHeader>
+              <DialogHeader>
+                <DialogTitle>Créer une année scolaire</DialogTitle>
+              </DialogHeader>
               <form onSubmit={create} className="space-y-3">
-                <div className="space-y-1.5"><Label>Nom (ex: 2025-2026)</Label><Input name="name" required /></div>
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="space-y-1.5"><Label>Début</Label><Input type="date" name="starts_on" required /></div>
-                  <div className="space-y-1.5"><Label>Fin</Label><Input type="date" name="ends_on" required /></div>
+                <div className="space-y-1.5">
+                  <Label>Nom (ex: 2025-2026)</Label>
+                  <Input name="name" required />
                 </div>
-                <DialogFooter><Button type="submit">Créer</Button></DialogFooter>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1.5">
+                    <Label>Début</Label>
+                    <Input type="date" name="starts_on" required />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label>Fin</Label>
+                    <Input type="date" name="ends_on" required />
+                  </div>
+                </div>
+                <DialogFooter>
+                  <Button type="submit">Créer</Button>
+                </DialogFooter>
               </form>
             </DialogContent>
           </Dialog>
@@ -85,21 +131,46 @@ function YearsPage() {
       <Card>
         <CardContent className="p-0">
           <Table>
-            <TableHeader><TableRow>
-              <TableHead>Année</TableHead><TableHead>Début</TableHead><TableHead>Fin</TableHead><TableHead>Statut</TableHead><TableHead className="text-right">Actions</TableHead>
-            </TableRow></TableHeader>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Année</TableHead>
+                <TableHead>Début</TableHead>
+                <TableHead>Fin</TableHead>
+                <TableHead>Statut</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
             <TableBody>
-              {years.length === 0 && <TableRow><TableCell colSpan={5} className="text-center text-muted-foreground py-8">Aucune année configurée.</TableCell></TableRow>}
+              {years.length === 0 && (
+                <TableRow>
+                  <TableCell colSpan={5} className="text-center text-muted-foreground py-8">
+                    Aucune année configurée.
+                  </TableCell>
+                </TableRow>
+              )}
               {years.map((y: any) => (
                 <TableRow key={y.id}>
                   <TableCell className="font-medium">{y.name}</TableCell>
                   <TableCell>{new Date(y.starts_on).toLocaleDateString("fr-FR")}</TableCell>
                   <TableCell>{new Date(y.ends_on).toLocaleDateString("fr-FR")}</TableCell>
-                  <TableCell>{y.is_active ? <Badge>Active</Badge> : <Badge variant="outline">Archivée</Badge>}</TableCell>
+                  <TableCell>
+                    {y.is_active ? (
+                      <Badge>Active</Badge>
+                    ) : (
+                      <Badge variant="outline">Archivée</Badge>
+                    )}
+                  </TableCell>
                   <TableCell className="text-right">
                     <div className="flex justify-end gap-1">
-                      {!y.is_active && <Button size="sm" variant="ghost" onClick={() => setActive(y.id)}><CheckCircle2 className="h-4 w-4 mr-1" />Activer</Button>}
-                      <Button size="icon" variant="ghost" onClick={() => remove(y.id)}><Trash2 className="h-4 w-4 text-destructive" /></Button>
+                      {!y.is_active && (
+                        <Button size="sm" variant="ghost" onClick={() => setActive(y.id)}>
+                          <CheckCircle2 className="h-4 w-4 mr-1" />
+                          Activer
+                        </Button>
+                      )}
+                      <Button size="icon" variant="ghost" onClick={() => remove(y.id)}>
+                        <Trash2 className="h-4 w-4 text-destructive" />
+                      </Button>
                     </div>
                   </TableCell>
                 </TableRow>

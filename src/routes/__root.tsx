@@ -23,7 +23,10 @@ function NotFoundComponent() {
           La page que vous cherchez n'existe pas ou a été déplacée.
         </p>
         <div className="mt-6">
-          <Link to="/" className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition hover:opacity-90">
+          <Link
+            to="/"
+            className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition hover:opacity-90"
+          >
             Retour à l'accueil
           </Link>
         </div>
@@ -43,7 +46,10 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
         <p className="mt-2 text-sm text-muted-foreground">Veuillez réessayer.</p>
         <div className="mt-6 flex flex-wrap justify-center gap-2">
           <button
-            onClick={() => { router.invalidate(); reset(); }}
+            onClick={() => {
+              router.invalidate();
+              reset();
+            }}
             className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:opacity-90"
           >
             Réessayer
@@ -65,12 +71,24 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "apple-mobile-web-app-title", content: "ML2 Edu" },
       { name: "mobile-web-app-capable", content: "yes" },
       { title: "ML2 EduManager — Plateforme de gestion multi-écoles" },
-      { name: "description", content: "Solution SaaS de gestion scolaire ML2 GROUP : élèves, notes, présences, paiements, planning et messagerie pour vos établissements." },
+      {
+        name: "description",
+        content:
+          "Solution SaaS de gestion scolaire ML2 GROUP : élèves, notes, présences, paiements, planning et messagerie pour vos établissements.",
+      },
       { property: "og:title", content: "ML2 EduManager — Plateforme de gestion multi-écoles" },
-      { property: "og:description", content: "Solution SaaS de gestion scolaire ML2 GROUP : élèves, notes, présences, paiements, planning et messagerie pour vos établissements." },
+      {
+        property: "og:description",
+        content:
+          "Solution SaaS de gestion scolaire ML2 GROUP : élèves, notes, présences, paiements, planning et messagerie pour vos établissements.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:title", content: "ML2 EduManager — Plateforme de gestion multi-écoles" },
-      { name: "twitter:description", content: "Solution SaaS de gestion scolaire ML2 GROUP : élèves, notes, présences, paiements, planning et messagerie pour vos établissements." },
+      {
+        name: "twitter:description",
+        content:
+          "Solution SaaS de gestion scolaire ML2 GROUP : élèves, notes, présences, paiements, planning et messagerie pour vos établissements.",
+      },
       { property: "og:image", content: "/icon-512.png" },
       { name: "twitter:image", content: "/icon-512.png" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -82,7 +100,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "icon", type: "image/png", href: "/icon-512.png" },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
-      { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" },
+      {
+        rel: "stylesheet",
+        href: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap",
+      },
     ],
   }),
   shellComponent: RootShell,

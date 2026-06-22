@@ -7,9 +7,16 @@ export const Route = createFileRoute("/pricing")({
   head: () => ({
     meta: [
       { title: "Tarifs — ML2 EduManager" },
-      { name: "description", content: "Plans Starter, Pro et Enterprise pour les établissements scolaires : choisissez l'abonnement adapté à votre école." },
+      {
+        name: "description",
+        content:
+          "Plans Starter, Pro et Enterprise pour les établissements scolaires : choisissez l'abonnement adapté à votre école.",
+      },
       { property: "og:title", content: "Tarifs ML2 EduManager" },
-      { property: "og:description", content: "Comparez Starter, Pro et Enterprise pour la gestion de vos écoles." },
+      {
+        property: "og:description",
+        content: "Comparez Starter, Pro et Enterprise pour la gestion de vos écoles.",
+      },
     ],
   }),
   component: PricingPage,
@@ -93,23 +100,36 @@ function PricingPage() {
             <div className="grid h-9 w-9 place-items-center rounded-lg bg-[image:var(--gradient-primary)] text-primary-foreground shadow-[var(--shadow-elegant)]">
               <Building2 className="h-5 w-5" />
             </div>
-            <span>ML2 <span className="text-primary-glow">EduManager</span></span>
+            <span>
+              ML2 <span className="text-primary-glow">EduManager</span>
+            </span>
           </Link>
           <nav className="hidden md:flex items-center gap-8 text-sm text-muted-foreground">
-            <Link to="/" className="hover:text-foreground">Accueil</Link>
-            <Link to="/pricing" className="text-foreground font-medium">Tarifs</Link>
+            <Link to="/" className="hover:text-foreground">
+              Accueil
+            </Link>
+            <Link to="/pricing" className="text-foreground font-medium">
+              Tarifs
+            </Link>
           </nav>
-          <Link to="/auth"><Button>Se connecter <ArrowRight className="h-4 w-4 ml-1" /></Button></Link>
+          <Link to="/auth">
+            <Button>
+              Se connecter <ArrowRight className="h-4 w-4 ml-1" />
+            </Button>
+          </Link>
         </div>
       </header>
 
       <section className="container mx-auto px-4 py-20 text-center">
-        <Badge variant="secondary" className="mb-4">Tarification transparente · FCFA</Badge>
+        <Badge variant="secondary" className="mb-4">
+          Tarification transparente · FCFA
+        </Badge>
         <h1 className="font-display text-4xl md:text-5xl font-bold tracking-tight">
           Un plan pour chaque école
         </h1>
         <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
-          Démarrez avec Starter, passez à Pro quand vous grandissez, et basculez en Enterprise quand vous gérez plusieurs établissements.
+          Démarrez avec Starter, passez à Pro quand vous grandissez, et basculez en Enterprise quand
+          vous gérez plusieurs établissements.
         </p>
       </section>
 
@@ -121,7 +141,9 @@ function PricingPage() {
               <div
                 key={plan.id}
                 className={`relative rounded-2xl border bg-card p-8 shadow-[var(--shadow-card)] transition hover:shadow-[var(--shadow-elegant)] ${
-                  plan.highlight ? "border-primary ring-2 ring-primary/30 scale-[1.02]" : "border-border"
+                  plan.highlight
+                    ? "border-primary ring-2 ring-primary/30 scale-[1.02]"
+                    : "border-border"
                 }`}
               >
                 {plan.highlight && (
@@ -130,7 +152,9 @@ function PricingPage() {
                   </Badge>
                 )}
                 <div className="flex items-center gap-3">
-                  <div className={`grid h-11 w-11 place-items-center rounded-xl ${plan.highlight ? "bg-[image:var(--gradient-primary)] text-primary-foreground" : "bg-secondary text-secondary-foreground"}`}>
+                  <div
+                    className={`grid h-11 w-11 place-items-center rounded-xl ${plan.highlight ? "bg-[image:var(--gradient-primary)] text-primary-foreground" : "bg-secondary text-secondary-foreground"}`}
+                  >
                     <Icon className="h-5 w-5" />
                   </div>
                   <div>
@@ -141,7 +165,11 @@ function PricingPage() {
 
                 <div className="mt-6 flex items-baseline gap-1">
                   <span className="font-display text-4xl font-bold">{plan.priceLabel}</span>
-                  {plan.period && <span className="text-sm text-muted-foreground">{plan.period === "/mois" ? "FCFA/mois" : plan.period}</span>}
+                  {plan.period && (
+                    <span className="text-sm text-muted-foreground">
+                      {plan.period === "/mois" ? "FCFA/mois" : plan.period}
+                    </span>
+                  )}
                 </div>
 
                 <Link to="/billing" className="block mt-6">
@@ -152,8 +180,13 @@ function PricingPage() {
 
                 <ul className="mt-8 space-y-3 text-sm">
                   {plan.features.map((f) => (
-                    <li key={f.label} className={`flex items-start gap-2 ${f.ok ? "" : "text-muted-foreground/60"}`}>
-                      <Check className={`h-4 w-4 mt-0.5 shrink-0 ${f.ok ? "text-success" : "text-muted-foreground/40"}`} />
+                    <li
+                      key={f.label}
+                      className={`flex items-start gap-2 ${f.ok ? "" : "text-muted-foreground/60"}`}
+                    >
+                      <Check
+                        className={`h-4 w-4 mt-0.5 shrink-0 ${f.ok ? "text-success" : "text-muted-foreground/40"}`}
+                      />
                       <span>{f.label}</span>
                     </li>
                   ))}
@@ -165,7 +198,8 @@ function PricingPage() {
 
         <p className="text-center text-sm text-muted-foreground mt-12">
           Tous les plans incluent les mises à jour, la sécurité de niveau bancaire et l'hébergement.
-          <br />Engagement mensuel sans frais cachés. Annulation à tout moment.
+          <br />
+          Engagement mensuel sans frais cachés. Annulation à tout moment.
         </p>
       </section>
 

@@ -13,7 +13,11 @@ export async function generateStudentMatricule(schoolId: string): Promise<string
     .select("code")
     .eq("id", schoolId)
     .maybeSingle();
-  const prefix = (school?.code ?? "ECO").toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 6) || "ECO";
+  const prefix =
+    (school?.code ?? "ECO")
+      .toUpperCase()
+      .replace(/[^A-Z0-9]/g, "")
+      .slice(0, 6) || "ECO";
 
   // Find the highest existing number for this prefix+year and increment.
   const pattern = `${prefix}-${year}-%`;

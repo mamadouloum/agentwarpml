@@ -9,18 +9,53 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import {
-  Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger,
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
 } from "@/components/ui/dialog";
 import {
-  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from "@/components/ui/select";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
-import { Plus, ArrowUpRight, ArrowDownRight, Wallet, TrendingUp, TrendingDown, Trash2, FileSpreadsheet, FileDown } from "lucide-react";
+import {
+  Plus,
+  ArrowUpRight,
+  ArrowDownRight,
+  Wallet,
+  TrendingUp,
+  TrendingDown,
+  Trash2,
+  FileSpreadsheet,
+  FileDown,
+} from "lucide-react";
 import { toast } from "sonner";
 import { useCurrentSchool } from "@/hooks/use-current-school";
-import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, Legend, CartesianGrid } from "recharts";
+import {
+  ResponsiveContainer,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  Legend,
+  CartesianGrid,
+} from "recharts";
 import * as XLSX from "xlsx";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
@@ -39,15 +74,28 @@ function AccountingPage() {
 
   const { data: expenses = [] } = useQuery({
     queryKey: ["expenses"],
-    queryFn: async () => (await supabase.from("expenses").select("*, expense_categories(name,color)").order("spent_at", { ascending: false })).data ?? [],
+    queryFn: async () =>
+      (
+        await supabase
+          .from("expenses")
+          .select("*, expense_categories(name,color)")
+          .order("spent_at", { ascending: false })
+      ).data ?? [],
   });
   const { data: categories = [] } = useQuery({
     queryKey: ["expense-categories"],
-    queryFn: async () => (await supabase.from("expense_categories").select("*").order("name")).data ?? [],
+    queryFn: async () =>
+      (await supabase.from("expense_categories").select("*").order("name")).data ?? [],
   });
   const { data: payments = [] } = useQuery({
     queryKey: ["payments-feed"],
-    queryFn: async () => (await supabase.from("payments").select("*, invoices(label, students(first_name,last_name))").order("paid_at", { ascending: false })).data ?? [],
+    queryFn: async () =>
+      (
+        await supabase
+          .from("payments")
+          .select("*, invoices(label, students(first_name,last_name))")
+          .order("paid_at", { ascending: false })
+      ).data ?? [],
   });
 
   const totals = useMemo(() => {
@@ -81,16 +129,26 @@ function AccountingPage() {
       map[k] ||= { month: k, recettes: 0, depenses: 0 };
       map[k].depenses += Number(e.amount);
     }
-    return Object.values(map).sort((a, b) => a.month.localeCompare(b.month)).slice(-12);
+    return Object.values(map)
+      .sort((a, b) => a.month.localeCompare(b.month))
+      .slice(-12);
   }, [payments, expenses]);
 
   function exportExcel() {
     const wb = XLSX.utils.book_new();
     const exp = (expenses as any[]).map((e) => ({
-      Date: e.spent_at, Libellé: e.label, Catégorie: e.expense_categories?.name ?? "", Fournisseur: e.supplier ?? "", Montant: Number(e.amount),
+      Date: e.spent_at,
+      Libellé: e.label,
+      Catégorie: e.expense_categories?.name ?? "",
+      Fournisseur: e.supplier ?? "",
+      Montant: Number(e.amount),
     }));
     const rev = (payments as any[]).map((p) => ({
-      Date: p.paid_at, Élève: `${p.invoices?.students?.last_name ?? ""} ${p.invoices?.students?.first_name ?? ""}`.trim(), Libellé: p.invoices?.label ?? "", Montant: Number(p.amount),
+      Date: p.paid_at,
+      Élève:
+        `${p.invoices?.students?.last_name ?? ""} ${p.invoices?.students?.first_name ?? ""}`.trim(),
+      Libellé: p.invoices?.label ?? "",
+      Montant: Number(p.amount),
     }));
     const bal = [
       { Indicateur: "Recettes", Montant: totals.revenue },
@@ -105,16 +163,34 @@ function AccountingPage() {
 
   function exportPdf() {
     const doc = new jsPDF();
-    doc.setFontSize(16); doc.text("Journal de comptabilité", 14, 16);
-    doc.setFontSize(10); doc.setTextColor(100);
-    doc.text(`Édité le ${new Date().toLocaleDateString("fr-FR")} — Recettes ${fmt(totals.revenue)} · Dépenses ${fmt(totals.spent)} · Solde ${fmt(totals.balance)}`, 14, 23);
+    doc.setFontSize(16);
+    doc.text("Journal de comptabilité", 14, 16);
+    doc.setFontSize(10);
+    doc.setTextColor(100);
+    doc.text(
+      `Édité le ${new Date().toLocaleDateString("fr-FR")} — Recettes ${fmt(totals.revenue)} · Dépenses ${fmt(totals.spent)} · Solde ${fmt(totals.balance)}`,
+      14,
+      23,
+    );
     autoTable(doc, {
-      startY: 30, head: [["Date", "Type", "Libellé", "Montant"]],
+      startY: 30,
+      head: [["Date", "Type", "Libellé", "Montant"]],
       body: [
-        ...(payments as any[]).map((p) => [new Date(p.paid_at).toLocaleDateString("fr-FR"), "Recette", p.invoices?.label ?? "", fmt(p.amount)]),
-        ...(expenses as any[]).map((e) => [new Date(e.spent_at).toLocaleDateString("fr-FR"), "Dépense", e.label, `- ${fmt(e.amount)}`]),
+        ...(payments as any[]).map((p) => [
+          new Date(p.paid_at).toLocaleDateString("fr-FR"),
+          "Recette",
+          p.invoices?.label ?? "",
+          fmt(p.amount),
+        ]),
+        ...(expenses as any[]).map((e) => [
+          new Date(e.spent_at).toLocaleDateString("fr-FR"),
+          "Dépense",
+          e.label,
+          `- ${fmt(e.amount)}`,
+        ]),
       ].sort((a, b) => String(b[0]).localeCompare(String(a[0]))),
-      styles: { fontSize: 9 }, headStyles: { fillColor: [30, 64, 175] },
+      styles: { fontSize: 9 },
+      headStyles: { fillColor: [30, 64, 175] },
     });
     doc.save(`journal_${new Date().toISOString().slice(0, 10)}.pdf`);
   }
@@ -168,42 +244,105 @@ function AccountingPage() {
         description="Suivi des recettes, dépenses et solde de trésorerie."
         action={
           <div className="flex gap-2 flex-wrap">
-            <Button variant="outline" onClick={exportExcel}><FileSpreadsheet className="h-4 w-4 mr-2" />Excel</Button>
-            <Button variant="outline" onClick={exportPdf}><FileDown className="h-4 w-4 mr-2" />PDF</Button>
+            <Button variant="outline" onClick={exportExcel}>
+              <FileSpreadsheet className="h-4 w-4 mr-2" />
+              Excel
+            </Button>
+            <Button variant="outline" onClick={exportPdf}>
+              <FileDown className="h-4 w-4 mr-2" />
+              PDF
+            </Button>
             <Dialog open={openCat} onOpenChange={setOpenCat}>
-              <DialogTrigger asChild><Button variant="outline">Catégorie</Button></DialogTrigger>
+              <DialogTrigger asChild>
+                <Button variant="outline">Catégorie</Button>
+              </DialogTrigger>
               <DialogContent>
-                <DialogHeader><DialogTitle>Nouvelle catégorie</DialogTitle></DialogHeader>
+                <DialogHeader>
+                  <DialogTitle>Nouvelle catégorie</DialogTitle>
+                </DialogHeader>
                 <form onSubmit={createCategory} className="space-y-3">
-                  <div className="space-y-1.5"><Label>Nom</Label><Input name="name" required placeholder="Salaires, Loyer, Fournitures..." /></div>
-                  <div className="space-y-1.5"><Label>Couleur</Label><Input name="color" type="color" defaultValue="#3b6fa0" className="h-10 w-20 p-1" /></div>
-                  <DialogFooter><Button type="submit">Créer</Button></DialogFooter>
+                  <div className="space-y-1.5">
+                    <Label>Nom</Label>
+                    <Input name="name" required placeholder="Salaires, Loyer, Fournitures..." />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label>Couleur</Label>
+                    <Input
+                      name="color"
+                      type="color"
+                      defaultValue="#3b6fa0"
+                      className="h-10 w-20 p-1"
+                    />
+                  </div>
+                  <DialogFooter>
+                    <Button type="submit">Créer</Button>
+                  </DialogFooter>
                 </form>
               </DialogContent>
             </Dialog>
             <Dialog open={openExp} onOpenChange={setOpenExp}>
-              <DialogTrigger asChild><Button><Plus className="h-4 w-4 mr-2" />Dépense</Button></DialogTrigger>
+              <DialogTrigger asChild>
+                <Button>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Dépense
+                </Button>
+              </DialogTrigger>
               <DialogContent>
-                <DialogHeader><DialogTitle>Enregistrer une dépense</DialogTitle></DialogHeader>
+                <DialogHeader>
+                  <DialogTitle>Enregistrer une dépense</DialogTitle>
+                </DialogHeader>
                 <form onSubmit={createExpense} className="space-y-3">
-                  <div className="space-y-1.5"><Label>Libellé</Label><Input name="label" required placeholder="Achat fournitures" /></div>
+                  <div className="space-y-1.5">
+                    <Label>Libellé</Label>
+                    <Input name="label" required placeholder="Achat fournitures" />
+                  </div>
                   <div className="grid grid-cols-2 gap-3">
-                    <div className="space-y-1.5"><Label>Montant</Label><Input name="amount" type="number" step="0.01" required /></div>
-                    <div className="space-y-1.5"><Label>Date</Label><Input name="spent_at" type="date" required defaultValue={new Date().toISOString().slice(0, 10)} /></div>
+                    <div className="space-y-1.5">
+                      <Label>Montant</Label>
+                      <Input name="amount" type="number" step="0.01" required />
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label>Date</Label>
+                      <Input
+                        name="spent_at"
+                        type="date"
+                        required
+                        defaultValue={new Date().toISOString().slice(0, 10)}
+                      />
+                    </div>
                   </div>
                   <div className="space-y-1.5">
                     <Label>Catégorie</Label>
                     <Select name="category_id">
-                      <SelectTrigger><SelectValue placeholder="—" /></SelectTrigger>
-                      <SelectContent>{categories.map((c: any) => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}</SelectContent>
+                      <SelectTrigger>
+                        <SelectValue placeholder="—" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {categories.map((c: any) => (
+                          <SelectItem key={c.id} value={c.id}>
+                            {c.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
                     </Select>
                   </div>
                   <div className="grid grid-cols-2 gap-3">
-                    <div className="space-y-1.5"><Label>Fournisseur</Label><Input name="supplier" /></div>
-                    <div className="space-y-1.5"><Label>Mode de paiement</Label><Input name="method" placeholder="Espèces, virement..." /></div>
+                    <div className="space-y-1.5">
+                      <Label>Fournisseur</Label>
+                      <Input name="supplier" />
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label>Mode de paiement</Label>
+                      <Input name="method" placeholder="Espèces, virement..." />
+                    </div>
                   </div>
-                  <div className="space-y-1.5"><Label>Note</Label><Textarea name="note" rows={2} /></div>
-                  <DialogFooter><Button type="submit">Enregistrer</Button></DialogFooter>
+                  <div className="space-y-1.5">
+                    <Label>Note</Label>
+                    <Textarea name="note" rows={2} />
+                  </div>
+                  <DialogFooter>
+                    <Button type="submit">Enregistrer</Button>
+                  </DialogFooter>
                 </form>
               </DialogContent>
             </Dialog>
@@ -218,7 +357,9 @@ function AccountingPage() {
             <TrendingUp className="h-4 w-4 text-success" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-display font-bold text-success">{fmt(totals.revenue)}</div>
+            <div className="text-2xl font-display font-bold text-success">
+              {fmt(totals.revenue)}
+            </div>
             <p className="text-xs text-muted-foreground mt-1">{payments.length} encaissement(s)</p>
           </CardContent>
         </Card>
@@ -228,7 +369,9 @@ function AccountingPage() {
             <TrendingDown className="h-4 w-4 text-destructive" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-display font-bold text-destructive">{fmt(totals.spent)}</div>
+            <div className="text-2xl font-display font-bold text-destructive">
+              {fmt(totals.spent)}
+            </div>
             <p className="text-xs text-muted-foreground mt-1">{expenses.length} ligne(s)</p>
           </CardContent>
         </Card>
@@ -246,7 +389,10 @@ function AccountingPage() {
 
       <div className="grid gap-4 lg:grid-cols-3">
         <Card className="lg:col-span-2 shadow-[var(--shadow-card)]">
-          <CardHeader><CardTitle className="font-display">Journal</CardTitle><CardDescription>Recettes et dépenses récentes</CardDescription></CardHeader>
+          <CardHeader>
+            <CardTitle className="font-display">Journal</CardTitle>
+            <CardDescription>Recettes et dépenses récentes</CardDescription>
+          </CardHeader>
           <CardContent>
             <Tabs defaultValue="expenses">
               <TabsList>
@@ -255,36 +401,95 @@ function AccountingPage() {
               </TabsList>
               <TabsContent value="expenses">
                 <Table>
-                  <TableHeader><TableRow><TableHead>Date</TableHead><TableHead>Libellé</TableHead><TableHead>Catégorie</TableHead><TableHead className="text-right">Montant</TableHead><TableHead></TableHead></TableRow></TableHeader>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Date</TableHead>
+                      <TableHead>Libellé</TableHead>
+                      <TableHead>Catégorie</TableHead>
+                      <TableHead className="text-right">Montant</TableHead>
+                      <TableHead></TableHead>
+                    </TableRow>
+                  </TableHeader>
                   <TableBody>
                     {expenses.length === 0 ? (
-                      <TableRow><TableCell colSpan={5} className="text-center py-8 text-muted-foreground">Aucune dépense.</TableCell></TableRow>
-                    ) : expenses.map((e: any) => (
-                      <TableRow key={e.id}>
-                        <TableCell className="text-xs text-muted-foreground">{new Date(e.spent_at).toLocaleDateString("fr-FR")}</TableCell>
-                        <TableCell className="font-medium">{e.label}{e.supplier && <div className="text-xs text-muted-foreground">{e.supplier}</div>}</TableCell>
-                        <TableCell>{e.expense_categories ? <Badge style={{ backgroundColor: e.expense_categories.color, color: "#fff" }}>{e.expense_categories.name}</Badge> : <span className="text-muted-foreground text-xs">—</span>}</TableCell>
-                        <TableCell className="text-right font-medium text-destructive"><ArrowDownRight className="inline h-3 w-3" /> {fmt(e.amount)}</TableCell>
-                        <TableCell><Button size="icon" variant="ghost" onClick={() => deleteExpense(e.id)}><Trash2 className="h-4 w-4" /></Button></TableCell>
+                      <TableRow>
+                        <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
+                          Aucune dépense.
+                        </TableCell>
                       </TableRow>
-                    ))}
+                    ) : (
+                      expenses.map((e: any) => (
+                        <TableRow key={e.id}>
+                          <TableCell className="text-xs text-muted-foreground">
+                            {new Date(e.spent_at).toLocaleDateString("fr-FR")}
+                          </TableCell>
+                          <TableCell className="font-medium">
+                            {e.label}
+                            {e.supplier && (
+                              <div className="text-xs text-muted-foreground">{e.supplier}</div>
+                            )}
+                          </TableCell>
+                          <TableCell>
+                            {e.expense_categories ? (
+                              <Badge
+                                style={{
+                                  backgroundColor: e.expense_categories.color,
+                                  color: "#fff",
+                                }}
+                              >
+                                {e.expense_categories.name}
+                              </Badge>
+                            ) : (
+                              <span className="text-muted-foreground text-xs">—</span>
+                            )}
+                          </TableCell>
+                          <TableCell className="text-right font-medium text-destructive">
+                            <ArrowDownRight className="inline h-3 w-3" /> {fmt(e.amount)}
+                          </TableCell>
+                          <TableCell>
+                            <Button size="icon" variant="ghost" onClick={() => deleteExpense(e.id)}>
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      ))
+                    )}
                   </TableBody>
                 </Table>
               </TabsContent>
               <TabsContent value="revenue">
                 <Table>
-                  <TableHeader><TableRow><TableHead>Date</TableHead><TableHead>Élève</TableHead><TableHead>Libellé</TableHead><TableHead className="text-right">Montant</TableHead></TableRow></TableHeader>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Date</TableHead>
+                      <TableHead>Élève</TableHead>
+                      <TableHead>Libellé</TableHead>
+                      <TableHead className="text-right">Montant</TableHead>
+                    </TableRow>
+                  </TableHeader>
                   <TableBody>
                     {payments.length === 0 ? (
-                      <TableRow><TableCell colSpan={4} className="text-center py-8 text-muted-foreground">Aucun encaissement.</TableCell></TableRow>
-                    ) : payments.map((p: any) => (
-                      <TableRow key={p.id}>
-                        <TableCell className="text-xs text-muted-foreground">{new Date(p.paid_at).toLocaleDateString("fr-FR")}</TableCell>
-                        <TableCell className="font-medium">{p.invoices?.students?.last_name} {p.invoices?.students?.first_name}</TableCell>
-                        <TableCell>{p.invoices?.label}</TableCell>
-                        <TableCell className="text-right font-medium text-success"><ArrowUpRight className="inline h-3 w-3" /> {fmt(p.amount)}</TableCell>
+                      <TableRow>
+                        <TableCell colSpan={4} className="text-center py-8 text-muted-foreground">
+                          Aucun encaissement.
+                        </TableCell>
                       </TableRow>
-                    ))}
+                    ) : (
+                      payments.map((p: any) => (
+                        <TableRow key={p.id}>
+                          <TableCell className="text-xs text-muted-foreground">
+                            {new Date(p.paid_at).toLocaleDateString("fr-FR")}
+                          </TableCell>
+                          <TableCell className="font-medium">
+                            {p.invoices?.students?.last_name} {p.invoices?.students?.first_name}
+                          </TableCell>
+                          <TableCell>{p.invoices?.label}</TableCell>
+                          <TableCell className="text-right font-medium text-success">
+                            <ArrowUpRight className="inline h-3 w-3" /> {fmt(p.amount)}
+                          </TableCell>
+                        </TableRow>
+                      ))
+                    )}
                   </TableBody>
                 </Table>
               </TabsContent>
@@ -293,22 +498,34 @@ function AccountingPage() {
         </Card>
 
         <Card className="shadow-[var(--shadow-card)]">
-          <CardHeader><CardTitle className="font-display">Répartition</CardTitle><CardDescription>Dépenses par catégorie</CardDescription></CardHeader>
+          <CardHeader>
+            <CardTitle className="font-display">Répartition</CardTitle>
+            <CardDescription>Dépenses par catégorie</CardDescription>
+          </CardHeader>
           <CardContent className="space-y-3">
             {byCategory.length === 0 ? (
               <p className="text-sm text-muted-foreground">Aucune dépense à analyser.</p>
-            ) : byCategory.map((c) => {
-              const pct = totals.spent ? Math.round((c.total / totals.spent) * 100) : 0;
-              return (
-                <div key={c.name} className="space-y-1">
-                  <div className="flex justify-between text-sm">
-                    <span className="font-medium flex items-center gap-2"><span className="h-2 w-2 rounded-full" style={{ background: c.color }} />{c.name}</span>
-                    <span className="text-muted-foreground">{fmt(c.total)} · {pct}%</span>
+            ) : (
+              byCategory.map((c) => {
+                const pct = totals.spent ? Math.round((c.total / totals.spent) * 100) : 0;
+                return (
+                  <div key={c.name} className="space-y-1">
+                    <div className="flex justify-between text-sm">
+                      <span className="font-medium flex items-center gap-2">
+                        <span className="h-2 w-2 rounded-full" style={{ background: c.color }} />
+                        {c.name}
+                      </span>
+                      <span className="text-muted-foreground">
+                        {fmt(c.total)} · {pct}%
+                      </span>
+                    </div>
+                    <div className="h-2 rounded-full bg-muted overflow-hidden">
+                      <div className="h-full" style={{ width: `${pct}%`, background: c.color }} />
+                    </div>
                   </div>
-                  <div className="h-2 rounded-full bg-muted overflow-hidden"><div className="h-full" style={{ width: `${pct}%`, background: c.color }} /></div>
-                </div>
-              );
-            })}
+                );
+              })
+            )}
           </CardContent>
         </Card>
       </div>

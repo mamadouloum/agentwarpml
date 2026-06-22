@@ -7,7 +7,11 @@ export function useCurrentSchool() {
     queryFn: async () => {
       const { data: u } = await supabase.auth.getUser();
       if (!u.user) return null;
-      const { data } = await supabase.from("profiles").select("school_id").eq("id", u.user.id).maybeSingle();
+      const { data } = await supabase
+        .from("profiles")
+        .select("school_id")
+        .eq("id", u.user.id)
+        .maybeSingle();
       return data?.school_id ?? null;
     },
   });
