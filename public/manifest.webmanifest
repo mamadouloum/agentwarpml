@@ -1,0 +1,17 @@
+{
+  "name": "ML2 EduManager",
+  "short_name": "ML2 Edu",
+  "description": "Plateforme de gestion multi-écoles ML2 GROUP",
+  "start_url": "/dashboard",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0f1b3d",
+  "theme_color": "#0f1b3d",
+  "lang": "fr",
+  "categories": ["education", "productivity", "business"],
+  "icons": [
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
