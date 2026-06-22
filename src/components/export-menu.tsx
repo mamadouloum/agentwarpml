@@ -1,5 +1,10 @@
 import { Button } from "@/components/ui/button";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Download, FileText, FileSpreadsheet } from "lucide-react";
 
 type Props = {
@@ -28,8 +33,14 @@ export function ExportMenu({ filename, title, columns, rows, subtitle }: Props) 
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        <DropdownMenuItem onClick={onCSV}><FileSpreadsheet className="h-4 w-4 mr-2" />CSV</DropdownMenuItem>
-        <DropdownMenuItem onClick={onPDF}><FileText className="h-4 w-4 mr-2" />PDF</DropdownMenuItem>
+        <DropdownMenuItem onClick={onCSV}>
+          <FileSpreadsheet className="h-4 w-4 mr-2" />
+          CSV
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={onPDF}>
+          <FileText className="h-4 w-4 mr-2" />
+          PDF
+        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );

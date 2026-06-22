@@ -8,10 +8,30 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Plus, MessageSquare, Phone, Mail, Send } from "lucide-react";
 import { toast } from "sonner";
 import { useCurrentSchool } from "@/hooks/use-current-school";
@@ -29,15 +49,31 @@ function MessagesPage() {
 
   const { data: messages = [] } = useQuery({
     queryKey: ["messages"],
-    queryFn: async () => (await supabase.from("messages").select("*").order("created_at", { ascending: false }).limit(50)).data ?? [],
+    queryFn: async () =>
+      (
+        await supabase
+          .from("messages")
+          .select("*")
+          .order("created_at", { ascending: false })
+          .limit(50)
+      ).data ?? [],
   });
   const { data: profiles = [] } = useQuery({
     queryKey: ["profiles-school"],
-    queryFn: async () => (await supabase.from("profiles").select("id,first_name,last_name")).data ?? [],
+    queryFn: async () =>
+      (await supabase.from("profiles").select("id,first_name,last_name")).data ?? [],
   });
   const { data: students = [] } = useQuery({
     queryKey: ["students-contacts"],
-    queryFn: async () => (await supabase.from("students").select("id,first_name,last_name,matricule,parent_name,parent_phone,parent_email,classes(name)").order("last_name")).data ?? [],
+    queryFn: async () =>
+      (
+        await supabase
+          .from("students")
+          .select(
+            "id,first_name,last_name,matricule,parent_name,parent_phone,parent_email,classes(name)",
+          )
+          .order("last_name")
+      ).data ?? [],
   });
 
   useEffect(() => {
@@ -47,7 +83,9 @@ function MessagesPage() {
         qc.invalidateQueries({ queryKey: ["messages"] });
       })
       .subscribe();
-    return () => { supabase.removeChannel(channel); };
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, [qc]);
 
   async function send(e: React.FormEvent<HTMLFormElement>) {
@@ -114,20 +152,43 @@ function MessagesPage() {
         description="Communiquez par message interne, WhatsApp, SMS ou Email."
         action={
           <Dialog open={open} onOpenChange={setOpen}>
-            <DialogTrigger asChild><Button><Plus className="h-4 w-4 mr-2" />Message interne</Button></DialogTrigger>
+            <DialogTrigger asChild>
+              <Button>
+                <Plus className="h-4 w-4 mr-2" />
+                Message interne
+              </Button>
+            </DialogTrigger>
             <DialogContent>
-              <DialogHeader><DialogTitle>Envoyer un message</DialogTitle></DialogHeader>
+              <DialogHeader>
+                <DialogTitle>Envoyer un message</DialogTitle>
+              </DialogHeader>
               <form onSubmit={send} className="space-y-3">
                 <div className="space-y-1.5">
                   <Label>Destinataire</Label>
                   <Select name="recipient_id" required>
-                    <SelectTrigger><SelectValue placeholder="Choisir..." /></SelectTrigger>
-                    <SelectContent>{profiles.map((p: any) => <SelectItem key={p.id} value={p.id}>{p.first_name} {p.last_name}</SelectItem>)}</SelectContent>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Choisir..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {profiles.map((p: any) => (
+                        <SelectItem key={p.id} value={p.id}>
+                          {p.first_name} {p.last_name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
                   </Select>
                 </div>
-                <div className="space-y-1.5"><Label>Objet</Label><Input name="subject" /></div>
-                <div className="space-y-1.5"><Label>Message</Label><Textarea name="body" rows={5} required /></div>
-                <DialogFooter><Button type="submit">Envoyer</Button></DialogFooter>
+                <div className="space-y-1.5">
+                  <Label>Objet</Label>
+                  <Input name="subject" />
+                </div>
+                <div className="space-y-1.5">
+                  <Label>Message</Label>
+                  <Textarea name="body" rows={5} required />
+                </div>
+                <DialogFooter>
+                  <Button type="submit">Envoyer</Button>
+                </DialogFooter>
               </form>
             </DialogContent>
           </Dialog>
@@ -153,7 +214,10 @@ function MessagesPage() {
                 rows={3}
               />
               <div className="flex flex-wrap gap-2">
-                <Button onClick={broadcastWhatsApp} className="bg-[#25D366] hover:bg-[#1ebe5a] text-white">
+                <Button
+                  onClick={broadcastWhatsApp}
+                  className="bg-[#25D366] hover:bg-[#1ebe5a] text-white"
+                >
                   <Send className="h-4 w-4 mr-2" /> Envoyer via WhatsApp
                 </Button>
                 <Button variant="outline" onClick={broadcastEmail}>
@@ -167,13 +231,16 @@ function MessagesPage() {
                 />
               </div>
               <p className="text-xs text-muted-foreground">
-                WhatsApp : ouvre le premier contact et copie tous les liens dans le presse-papier. Email : ouvre votre client mail avec tous les parents en BCC.
+                WhatsApp : ouvre le premier contact et copie tous les liens dans le presse-papier.
+                Email : ouvre votre client mail avec tous les parents en BCC.
               </p>
             </CardContent>
           </Card>
 
           <Card>
-            <CardHeader><CardTitle>Contacts parents ({filtered.length})</CardTitle></CardHeader>
+            <CardHeader>
+              <CardTitle>Contacts parents ({filtered.length})</CardTitle>
+            </CardHeader>
             <CardContent className="p-0">
               <Table>
                 <TableHeader>
@@ -188,7 +255,9 @@ function MessagesPage() {
                 <TableBody>
                   {filtered.map((s: any) => (
                     <TableRow key={s.id}>
-                      <TableCell className="font-medium">{s.last_name} {s.first_name}</TableCell>
+                      <TableCell className="font-medium">
+                        {s.last_name} {s.first_name}
+                      </TableCell>
                       <TableCell>{s.classes?.name || "—"}</TableCell>
                       <TableCell>{s.parent_name || "—"}</TableCell>
                       <TableCell className="text-xs text-muted-foreground">
@@ -200,12 +269,18 @@ function MessagesPage() {
                           {s.parent_phone && (
                             <>
                               <Button asChild variant="ghost" size="icon" title="WhatsApp">
-                                <a href={whatsappLink(s.parent_phone, broadcast)} target="_blank" rel="noreferrer">
+                                <a
+                                  href={whatsappLink(s.parent_phone, broadcast)}
+                                  target="_blank"
+                                  rel="noreferrer"
+                                >
                                   <Send className="h-4 w-4 text-[#25D366]" />
                                 </a>
                               </Button>
                               <Button asChild variant="ghost" size="icon" title="SMS">
-                                <a href={`sms:${s.parent_phone}${broadcast ? `?body=${encodeURIComponent(broadcast)}` : ""}`}>
+                                <a
+                                  href={`sms:${s.parent_phone}${broadcast ? `?body=${encodeURIComponent(broadcast)}` : ""}`}
+                                >
                                   <Phone className="h-4 w-4" />
                                 </a>
                               </Button>
@@ -213,7 +288,9 @@ function MessagesPage() {
                           )}
                           {s.parent_email && (
                             <Button asChild variant="ghost" size="icon" title="Email">
-                              <a href={`mailto:${s.parent_email}?body=${encodeURIComponent(broadcast)}`}>
+                              <a
+                                href={`mailto:${s.parent_email}?body=${encodeURIComponent(broadcast)}`}
+                              >
                                 <Mail className="h-4 w-4" />
                               </a>
                             </Button>
@@ -223,7 +300,11 @@ function MessagesPage() {
                     </TableRow>
                   ))}
                   {filtered.length === 0 && (
-                    <TableRow><TableCell colSpan={5} className="text-center text-muted-foreground py-8">Aucun contact</TableCell></TableRow>
+                    <TableRow>
+                      <TableCell colSpan={5} className="text-center text-muted-foreground py-8">
+                        Aucun contact
+                      </TableCell>
+                    </TableRow>
                   )}
                 </TableBody>
               </Table>
@@ -239,17 +320,23 @@ function MessagesPage() {
                   <MessageSquare className="h-8 w-8 opacity-40" />
                   Aucun message pour le moment.
                 </div>
-              ) : messages.map((m: any) => (
-                <div key={m.id} className="py-4 first:pt-0 last:pb-0">
-                  <div className="flex justify-between items-start gap-3">
-                    <div>
-                      <div className="font-semibold">{m.subject || "(sans objet)"}</div>
-                      <p className="text-sm text-muted-foreground mt-1 whitespace-pre-wrap">{m.body}</p>
+              ) : (
+                messages.map((m: any) => (
+                  <div key={m.id} className="py-4 first:pt-0 last:pb-0">
+                    <div className="flex justify-between items-start gap-3">
+                      <div>
+                        <div className="font-semibold">{m.subject || "(sans objet)"}</div>
+                        <p className="text-sm text-muted-foreground mt-1 whitespace-pre-wrap">
+                          {m.body}
+                        </p>
+                      </div>
+                      <span className="text-xs text-muted-foreground shrink-0">
+                        {new Date(m.created_at).toLocaleString("fr-FR")}
+                      </span>
                     </div>
-                    <span className="text-xs text-muted-foreground shrink-0">{new Date(m.created_at).toLocaleString("fr-FR")}</span>
                   </div>
-                </div>
-              ))}
+                ))
+              )}
             </CardContent>
           </Card>
         </TabsContent>

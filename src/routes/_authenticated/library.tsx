@@ -8,13 +8,29 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
-  Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger,
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
 } from "@/components/ui/dialog";
 import {
-  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Plus, Loader2, Trash2, Check } from "lucide-react";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
@@ -55,7 +71,10 @@ function LibraryPage() {
   const { data: students = [] } = useQuery({
     queryKey: ["students-min"],
     queryFn: async () => {
-      const { data } = await supabase.from("students").select("id,first_name,last_name").order("last_name");
+      const { data } = await supabase
+        .from("students")
+        .select("id,first_name,last_name")
+        .order("last_name");
       return data ?? [];
     },
   });
@@ -99,7 +118,10 @@ function LibraryPage() {
       due_date: String(fd.get("due_date")),
     });
     if (!error) {
-      await supabase.from("library_books").update({ available_qty: book.available_qty - 1 }).eq("id", bookId);
+      await supabase
+        .from("library_books")
+        .update({ available_qty: book.available_qty - 1 })
+        .eq("id", bookId);
     }
     setSaving(false);
     if (error) return toast.error(error.message);
@@ -110,14 +132,20 @@ function LibraryPage() {
   }
 
   async function returnLoan(loan: any) {
-    const { error } = await supabase.from("library_loans").update({
-      return_date: new Date().toISOString().slice(0, 10),
-      status: "returned",
-    }).eq("id", loan.id);
+    const { error } = await supabase
+      .from("library_loans")
+      .update({
+        return_date: new Date().toISOString().slice(0, 10),
+        status: "returned",
+      })
+      .eq("id", loan.id);
     if (error) return toast.error(error.message);
     const book = books.find((b: any) => b.id === loan.book_id);
     if (book) {
-      await supabase.from("library_books").update({ available_qty: book.available_qty + 1 }).eq("id", book.id);
+      await supabase
+        .from("library_books")
+        .update({ available_qty: book.available_qty + 1 })
+        .eq("id", book.id);
     }
     toast.success("Livre retourné");
     qc.invalidateQueries({ queryKey: ["library_loans"] });
@@ -144,20 +172,43 @@ function LibraryPage() {
           <div className="flex justify-end">
             <Dialog open={openBook} onOpenChange={setOpenBook}>
               <DialogTrigger asChild>
-                <Button><Plus className="h-4 w-4 mr-2" />Nouveau livre</Button>
+                <Button>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Nouveau livre
+                </Button>
               </DialogTrigger>
               <DialogContent>
-                <DialogHeader><DialogTitle>Nouveau livre</DialogTitle></DialogHeader>
+                <DialogHeader>
+                  <DialogTitle>Nouveau livre</DialogTitle>
+                </DialogHeader>
                 <form onSubmit={createBook} className="space-y-3">
-                  <div><Label>Titre</Label><Input name="title" required /></div>
+                  <div>
+                    <Label>Titre</Label>
+                    <Input name="title" required />
+                  </div>
                   <div className="grid grid-cols-2 gap-3">
-                    <div><Label>Auteur</Label><Input name="author" /></div>
-                    <div><Label>ISBN</Label><Input name="isbn" /></div>
+                    <div>
+                      <Label>Auteur</Label>
+                      <Input name="author" />
+                    </div>
+                    <div>
+                      <Label>ISBN</Label>
+                      <Input name="isbn" />
+                    </div>
                   </div>
                   <div className="grid grid-cols-3 gap-3">
-                    <div><Label>Catégorie</Label><Input name="category" /></div>
-                    <div><Label>Quantité</Label><Input type="number" name="total_qty" defaultValue={1} required /></div>
-                    <div><Label>Étagère</Label><Input name="shelf" /></div>
+                    <div>
+                      <Label>Catégorie</Label>
+                      <Input name="category" />
+                    </div>
+                    <div>
+                      <Label>Quantité</Label>
+                      <Input type="number" name="total_qty" defaultValue={1} required />
+                    </div>
+                    <div>
+                      <Label>Étagère</Label>
+                      <Input name="shelf" />
+                    </div>
                   </div>
                   <DialogFooter>
                     <Button type="submit" disabled={saving}>
@@ -169,14 +220,19 @@ function LibraryPage() {
             </Dialog>
           </div>
           <Card>
-            <CardHeader><CardTitle>Catalogue</CardTitle></CardHeader>
+            <CardHeader>
+              <CardTitle>Catalogue</CardTitle>
+            </CardHeader>
             <CardContent className="p-0">
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Titre</TableHead><TableHead>Auteur</TableHead>
-                    <TableHead>Catégorie</TableHead><TableHead>Étagère</TableHead>
-                    <TableHead>Stock</TableHead><TableHead></TableHead>
+                    <TableHead>Titre</TableHead>
+                    <TableHead>Auteur</TableHead>
+                    <TableHead>Catégorie</TableHead>
+                    <TableHead>Étagère</TableHead>
+                    <TableHead>Stock</TableHead>
+                    <TableHead></TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -186,14 +242,24 @@ function LibraryPage() {
                       <TableCell>{b.author}</TableCell>
                       <TableCell>{b.category}</TableCell>
                       <TableCell>{b.shelf}</TableCell>
-                      <TableCell><Badge variant={b.available_qty > 0 ? "default" : "secondary"}>{b.available_qty}/{b.total_qty}</Badge></TableCell>
+                      <TableCell>
+                        <Badge variant={b.available_qty > 0 ? "default" : "secondary"}>
+                          {b.available_qty}/{b.total_qty}
+                        </Badge>
+                      </TableCell>
                       <TableCell className="text-right">
-                        <Button variant="ghost" size="icon" onClick={() => removeBook(b.id)}><Trash2 className="h-4 w-4" /></Button>
+                        <Button variant="ghost" size="icon" onClick={() => removeBook(b.id)}>
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
                       </TableCell>
                     </TableRow>
                   ))}
                   {books.length === 0 && (
-                    <TableRow><TableCell colSpan={6} className="text-center text-muted-foreground py-8">Aucun livre</TableCell></TableRow>
+                    <TableRow>
+                      <TableCell colSpan={6} className="text-center text-muted-foreground py-8">
+                        Aucun livre
+                      </TableCell>
+                    </TableRow>
                   )}
                 </TableBody>
               </Table>
@@ -205,36 +271,57 @@ function LibraryPage() {
           <div className="flex justify-end">
             <Dialog open={openLoan} onOpenChange={setOpenLoan}>
               <DialogTrigger asChild>
-                <Button><Plus className="h-4 w-4 mr-2" />Nouvel emprunt</Button>
+                <Button>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Nouvel emprunt
+                </Button>
               </DialogTrigger>
               <DialogContent>
-                <DialogHeader><DialogTitle>Nouvel emprunt</DialogTitle></DialogHeader>
+                <DialogHeader>
+                  <DialogTitle>Nouvel emprunt</DialogTitle>
+                </DialogHeader>
                 <form onSubmit={createLoan} className="space-y-3">
                   <div>
                     <Label>Livre</Label>
                     <Select name="book_id" required>
-                      <SelectTrigger><SelectValue placeholder="Sélectionner" /></SelectTrigger>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Sélectionner" />
+                      </SelectTrigger>
                       <SelectContent>
-                        {books.filter((b: any) => b.available_qty > 0).map((b: any) => (
-                          <SelectItem key={b.id} value={b.id}>{b.title} ({b.available_qty} dispo)</SelectItem>
-                        ))}
+                        {books
+                          .filter((b: any) => b.available_qty > 0)
+                          .map((b: any) => (
+                            <SelectItem key={b.id} value={b.id}>
+                              {b.title} ({b.available_qty} dispo)
+                            </SelectItem>
+                          ))}
                       </SelectContent>
                     </Select>
                   </div>
                   <div>
                     <Label>Élève</Label>
                     <Select name="student_id" required>
-                      <SelectTrigger><SelectValue placeholder="Sélectionner" /></SelectTrigger>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Sélectionner" />
+                      </SelectTrigger>
                       <SelectContent>
                         {students.map((s: any) => (
-                          <SelectItem key={s.id} value={s.id}>{s.last_name} {s.first_name}</SelectItem>
+                          <SelectItem key={s.id} value={s.id}>
+                            {s.last_name} {s.first_name}
+                          </SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
                   </div>
                   <div className="grid grid-cols-2 gap-3">
-                    <div><Label>Date d'emprunt</Label><Input type="date" name="loan_date" /></div>
-                    <div><Label>Date de retour prévue</Label><Input type="date" name="due_date" required /></div>
+                    <div>
+                      <Label>Date d'emprunt</Label>
+                      <Input type="date" name="loan_date" />
+                    </div>
+                    <div>
+                      <Label>Date de retour prévue</Label>
+                      <Input type="date" name="due_date" required />
+                    </div>
                   </div>
                   <DialogFooter>
                     <Button type="submit" disabled={saving}>
@@ -246,33 +333,51 @@ function LibraryPage() {
             </Dialog>
           </div>
           <Card>
-            <CardHeader><CardTitle>Emprunts</CardTitle></CardHeader>
+            <CardHeader>
+              <CardTitle>Emprunts</CardTitle>
+            </CardHeader>
             <CardContent className="p-0">
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Livre</TableHead><TableHead>Élève</TableHead>
-                    <TableHead>Emprunté le</TableHead><TableHead>À rendre</TableHead>
-                    <TableHead>Statut</TableHead><TableHead></TableHead>
+                    <TableHead>Livre</TableHead>
+                    <TableHead>Élève</TableHead>
+                    <TableHead>Emprunté le</TableHead>
+                    <TableHead>À rendre</TableHead>
+                    <TableHead>Statut</TableHead>
+                    <TableHead></TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {loans.map((l: any) => (
                     <TableRow key={l.id}>
                       <TableCell>{l.library_books?.title}</TableCell>
-                      <TableCell>{l.students?.last_name} {l.students?.first_name}</TableCell>
+                      <TableCell>
+                        {l.students?.last_name} {l.students?.first_name}
+                      </TableCell>
                       <TableCell>{l.loan_date}</TableCell>
                       <TableCell>{l.due_date}</TableCell>
-                      <TableCell><Badge variant={l.status === "returned" ? "secondary" : "default"}>{l.status}</Badge></TableCell>
+                      <TableCell>
+                        <Badge variant={l.status === "returned" ? "secondary" : "default"}>
+                          {l.status}
+                        </Badge>
+                      </TableCell>
                       <TableCell className="text-right">
                         {l.status !== "returned" && (
-                          <Button variant="ghost" size="sm" onClick={() => returnLoan(l)}><Check className="h-4 w-4 mr-1" />Retour</Button>
+                          <Button variant="ghost" size="sm" onClick={() => returnLoan(l)}>
+                            <Check className="h-4 w-4 mr-1" />
+                            Retour
+                          </Button>
                         )}
                       </TableCell>
                     </TableRow>
                   ))}
                   {loans.length === 0 && (
-                    <TableRow><TableCell colSpan={6} className="text-center text-muted-foreground py-8">Aucun emprunt</TableCell></TableRow>
+                    <TableRow>
+                      <TableCell colSpan={6} className="text-center text-muted-foreground py-8">
+                        Aucun emprunt
+                      </TableCell>
+                    </TableRow>
                   )}
                 </TableBody>
               </Table>

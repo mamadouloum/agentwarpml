@@ -282,17 +282,15 @@ function ClassSubjectsManager({
     });
     if (error) return toast.error(error.message);
     if (teacherId) {
-      await (supabase as any)
-        .from("teacher_assignments")
-        .upsert(
-          {
-            school_id: schoolId,
-            teacher_user_id: teacherId,
-            class_id: classId,
-            subject_id: subjectId,
-          },
-          { onConflict: "teacher_user_id,class_id,subject_id" },
-        );
+      await (supabase as any).from("teacher_assignments").upsert(
+        {
+          school_id: schoolId,
+          teacher_user_id: teacherId,
+          class_id: classId,
+          subject_id: subjectId,
+        },
+        { onConflict: "teacher_user_id,class_id,subject_id" },
+      );
     }
     setSubjectId("");
     setTeacherId("");

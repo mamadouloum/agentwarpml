@@ -1,13 +1,41 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import {
-  LayoutDashboard, Users, GraduationCap, ClipboardCheck, Wallet,
-  CalendarDays, MessageSquare, Building2, Settings, BookOpen, Calculator, Crown, Shield, Palette, FileText,
-  UtensilsCrossed, Bus, Library, BookMarked, Megaphone, LayoutGrid, Home, CalendarRange, IdCard,
+  LayoutDashboard,
+  Users,
+  GraduationCap,
+  ClipboardCheck,
+  Wallet,
+  CalendarDays,
+  MessageSquare,
+  Building2,
+  Settings,
+  BookOpen,
+  Calculator,
+  Crown,
+  Shield,
+  Palette,
+  FileText,
+  UtensilsCrossed,
+  Bus,
+  Library,
+  BookMarked,
+  Megaphone,
+  LayoutGrid,
+  Home,
+  CalendarRange,
+  IdCard,
 } from "lucide-react";
 import {
-  Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent,
-  SidebarGroupLabel, SidebarHeader, SidebarMenu, SidebarMenuButton,
-  SidebarMenuItem, useSidebar,
+  Sidebar,
+  SidebarContent,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarGroupLabel,
+  SidebarHeader,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  useSidebar,
 } from "@/components/ui/sidebar";
 import { useIsSuperAdmin } from "@/lib/super-admin";
 import { SchoolLogo, useSchoolBranding } from "@/lib/branding";
@@ -43,9 +71,7 @@ const adminItems = [
   { title: "Paramètres", url: "/settings", icon: Settings },
 ];
 
-const superAdminItems = [
-  { title: "Plateforme", url: "/admin", icon: Shield },
-];
+const superAdminItems = [{ title: "Plateforme", url: "/admin", icon: Shield }];
 
 export function AppSidebar() {
   const { state } = useSidebar();
@@ -62,8 +88,12 @@ export function AppSidebar() {
           <SchoolLogo className="h-8 w-8 shrink-0" />
           {!collapsed && (
             <div className="flex flex-col leading-tight">
-              <span className="font-display font-bold text-sidebar-foreground text-sm">ML2 EduManager</span>
-              <span className="text-[10px] text-sidebar-foreground/60 uppercase tracking-wider">{branding?.motto || "ML2 GROUP"}</span>
+              <span className="font-display font-bold text-sidebar-foreground text-sm">
+                ML2 EduManager
+              </span>
+              <span className="text-[10px] text-sidebar-foreground/60 uppercase tracking-wider">
+                {branding?.motto || "ML2 GROUP"}
+              </span>
             </div>
           )}
         </Link>

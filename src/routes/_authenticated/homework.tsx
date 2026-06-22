@@ -9,10 +9,19 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import {
-  Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger,
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
 } from "@/components/ui/dialog";
 import {
-  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Plus, Loader2, Trash2, BookMarked, CalendarClock } from "lucide-react";
@@ -46,11 +55,13 @@ function HomeworkPage() {
 
   const { data: classes = [] } = useQuery({
     queryKey: ["classes-min"],
-    queryFn: async () => (await supabase.from("classes").select("id,name").order("name")).data ?? [],
+    queryFn: async () =>
+      (await supabase.from("classes").select("id,name").order("name")).data ?? [],
   });
   const { data: subjects = [] } = useQuery({
     queryKey: ["subjects-min"],
-    queryFn: async () => (await supabase.from("subjects").select("id,name").order("name")).data ?? [],
+    queryFn: async () =>
+      (await supabase.from("subjects").select("id,name").order("name")).data ?? [],
   });
 
   async function create(e: React.FormEvent<HTMLFormElement>) {
@@ -97,46 +108,84 @@ function HomeworkPage() {
         action={
           <div className="flex gap-2">
             <Select value={classFilter} onValueChange={setClassFilter}>
-              <SelectTrigger className="w-44"><SelectValue /></SelectTrigger>
+              <SelectTrigger className="w-44">
+                <SelectValue />
+              </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">Toutes les classes</SelectItem>
-                {classes.map((c: any) => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
+                {classes.map((c: any) => (
+                  <SelectItem key={c.id} value={c.id}>
+                    {c.name}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
             <Dialog open={open} onOpenChange={setOpen}>
               <DialogTrigger asChild>
-                <Button><Plus className="h-4 w-4 mr-2" />Nouveau devoir</Button>
+                <Button>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Nouveau devoir
+                </Button>
               </DialogTrigger>
               <DialogContent>
-                <DialogHeader><DialogTitle>Nouveau devoir</DialogTitle></DialogHeader>
+                <DialogHeader>
+                  <DialogTitle>Nouveau devoir</DialogTitle>
+                </DialogHeader>
                 <form onSubmit={create} className="space-y-3">
-                  <div><Label>Titre</Label><Input name="title" required /></div>
+                  <div>
+                    <Label>Titre</Label>
+                    <Input name="title" required />
+                  </div>
                   <div className="grid grid-cols-2 gap-3">
                     <div>
                       <Label>Classe</Label>
                       <Select name="class_id" required>
-                        <SelectTrigger><SelectValue placeholder="Sélectionner" /></SelectTrigger>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Sélectionner" />
+                        </SelectTrigger>
                         <SelectContent>
-                          {classes.map((c: any) => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
+                          {classes.map((c: any) => (
+                            <SelectItem key={c.id} value={c.id}>
+                              {c.name}
+                            </SelectItem>
+                          ))}
                         </SelectContent>
                       </Select>
                     </div>
                     <div>
                       <Label>Matière</Label>
                       <Select name="subject_id">
-                        <SelectTrigger><SelectValue placeholder="Optionnel" /></SelectTrigger>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Optionnel" />
+                        </SelectTrigger>
                         <SelectContent>
-                          {subjects.map((s: any) => <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>)}
+                          {subjects.map((s: any) => (
+                            <SelectItem key={s.id} value={s.id}>
+                              {s.name}
+                            </SelectItem>
+                          ))}
                         </SelectContent>
                       </Select>
                     </div>
                   </div>
                   <div className="grid grid-cols-2 gap-3">
-                    <div><Label>Date d'attribution</Label><Input type="date" name="assigned_date" /></div>
-                    <div><Label>Date de remise</Label><Input type="date" name="due_date" required /></div>
+                    <div>
+                      <Label>Date d'attribution</Label>
+                      <Input type="date" name="assigned_date" />
+                    </div>
+                    <div>
+                      <Label>Date de remise</Label>
+                      <Input type="date" name="due_date" required />
+                    </div>
                   </div>
-                  <div><Label>Description / Consignes</Label><Textarea name="description" rows={4} /></div>
-                  <div><Label>Pièce jointe (URL)</Label><Input name="attachment_url" type="url" placeholder="https://..." /></div>
+                  <div>
+                    <Label>Description / Consignes</Label>
+                    <Textarea name="description" rows={4} />
+                  </div>
+                  <div>
+                    <Label>Pièce jointe (URL)</Label>
+                    <Input name="attachment_url" type="url" placeholder="https://..." />
+                  </div>
                   <DialogFooter>
                     <Button type="submit" disabled={saving}>
                       {saving && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}Enregistrer
@@ -150,25 +199,44 @@ function HomeworkPage() {
       />
 
       {isLoading ? (
-        <div className="p-12 text-center"><Loader2 className="h-6 w-6 animate-spin mx-auto" /></div>
+        <div className="p-12 text-center">
+          <Loader2 className="h-6 w-6 animate-spin mx-auto" />
+        </div>
       ) : (
         <div className="grid lg:grid-cols-2 gap-6">
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2"><CalendarClock className="h-5 w-5" />À venir ({upcoming.length})</CardTitle>
+              <CardTitle className="flex items-center gap-2">
+                <CalendarClock className="h-5 w-5" />À venir ({upcoming.length})
+              </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
-              {upcoming.length === 0 && <p className="text-sm text-muted-foreground text-center py-6">Aucun devoir à venir.</p>}
-              {upcoming.map((h: any) => <HomeworkCard key={h.id} h={h} onDelete={remove} />)}
+              {upcoming.length === 0 && (
+                <p className="text-sm text-muted-foreground text-center py-6">
+                  Aucun devoir à venir.
+                </p>
+              )}
+              {upcoming.map((h: any) => (
+                <HomeworkCard key={h.id} h={h} onDelete={remove} />
+              ))}
             </CardContent>
           </Card>
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2"><BookMarked className="h-5 w-5" />Historique ({past.length})</CardTitle>
+              <CardTitle className="flex items-center gap-2">
+                <BookMarked className="h-5 w-5" />
+                Historique ({past.length})
+              </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
-              {past.length === 0 && <p className="text-sm text-muted-foreground text-center py-6">Aucun devoir passé.</p>}
-              {past.slice(0, 30).map((h: any) => <HomeworkCard key={h.id} h={h} onDelete={remove} muted />)}
+              {past.length === 0 && (
+                <p className="text-sm text-muted-foreground text-center py-6">
+                  Aucun devoir passé.
+                </p>
+              )}
+              {past.slice(0, 30).map((h: any) => (
+                <HomeworkCard key={h.id} h={h} onDelete={remove} muted />
+              ))}
             </CardContent>
           </Card>
         </div>
@@ -177,7 +245,15 @@ function HomeworkPage() {
   );
 }
 
-function HomeworkCard({ h, onDelete, muted }: { h: any; onDelete: (id: string) => void; muted?: boolean }) {
+function HomeworkCard({
+  h,
+  onDelete,
+  muted,
+}: {
+  h: any;
+  onDelete: (id: string) => void;
+  muted?: boolean;
+}) {
   const daysLeft = Math.ceil((new Date(h.due_date).getTime() - Date.now()) / 86400000);
   return (
     <div className={`rounded-lg border p-3 ${muted ? "opacity-60" : ""}`}>
@@ -188,14 +264,26 @@ function HomeworkCard({ h, onDelete, muted }: { h: any; onDelete: (id: string) =
             <Badge variant="outline">{h.classes?.name}</Badge>
             {h.subjects?.name && <Badge variant="secondary">{h.subjects.name}</Badge>}
           </div>
-          {h.description && <p className="text-sm text-muted-foreground mt-1 whitespace-pre-wrap">{h.description}</p>}
+          {h.description && (
+            <p className="text-sm text-muted-foreground mt-1 whitespace-pre-wrap">
+              {h.description}
+            </p>
+          )}
           {h.attachment_url && (
-            <a href={h.attachment_url} target="_blank" rel="noreferrer" className="text-xs text-primary underline mt-1 inline-block">
+            <a
+              href={h.attachment_url}
+              target="_blank"
+              rel="noreferrer"
+              className="text-xs text-primary underline mt-1 inline-block"
+            >
               Pièce jointe
             </a>
           )}
           <div className="text-xs text-muted-foreground mt-2">
-            À remettre le <span className="font-medium text-foreground">{new Date(h.due_date).toLocaleDateString("fr-FR")}</span>
+            À remettre le{" "}
+            <span className="font-medium text-foreground">
+              {new Date(h.due_date).toLocaleDateString("fr-FR")}
+            </span>
             {!muted && daysLeft >= 0 && (
               <span className={`ml-2 ${daysLeft <= 2 ? "text-destructive font-medium" : ""}`}>
                 ({daysLeft === 0 ? "aujourd'hui" : `dans ${daysLeft} j`})
@@ -203,7 +291,9 @@ function HomeworkCard({ h, onDelete, muted }: { h: any; onDelete: (id: string) =
             )}
           </div>
         </div>
-        <Button variant="ghost" size="icon" onClick={() => onDelete(h.id)}><Trash2 className="h-4 w-4" /></Button>
+        <Button variant="ghost" size="icon" onClick={() => onDelete(h.id)}>
+          <Trash2 className="h-4 w-4" />
+        </Button>
       </div>
     </div>
   );

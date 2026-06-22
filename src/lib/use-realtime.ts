@@ -9,17 +9,15 @@ import { supabase } from "@/integrations/supabase/client";
 export function useRealtimeSync(tables: string[], queryKeys: (string | (string | undefined)[])[]) {
   const qc = useQueryClient();
   useEffect(() => {
-    const channel = supabase.channel(`rt-${tables.join("-")}-${Math.random().toString(36).slice(2, 7)}`);
+    const channel = supabase.channel(
+      `rt-${tables.join("-")}-${Math.random().toString(36).slice(2, 7)}`,
+    );
     tables.forEach((t) => {
-      channel.on(
-        "postgres_changes" as any,
-        { event: "*", schema: "public", table: t },
-        () => {
-          queryKeys.forEach((k) => {
-            qc.invalidateQueries({ queryKey: Array.isArray(k) ? k : [k] });
-          });
-        },
-      );
+      channel.on("postgres_changes" as any, { event: "*", schema: "public", table: t }, () => {
+        queryKeys.forEach((k) => {
+          qc.invalidateQueries({ queryKey: Array.isArray(k) ? k : [k] });
+        });
+      });
     });
     channel.subscribe();
     return () => {

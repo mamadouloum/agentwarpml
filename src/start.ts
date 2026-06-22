@@ -28,10 +28,7 @@ function applySecurityHeaders(headers: Headers) {
   headers.set("Permissions-Policy", "camera=(), microphone=(), geolocation=()");
   headers.set("X-DNS-Prefetch-Control", "off");
   if (process.env.NODE_ENV === "production") {
-    headers.set(
-      "Strict-Transport-Security",
-      "max-age=63072000; includeSubDomains; preload",
-    );
+    headers.set("Strict-Transport-Security", "max-age=63072000; includeSubDomains; preload");
     headers.set("Content-Security-Policy", CSP);
   }
 }
