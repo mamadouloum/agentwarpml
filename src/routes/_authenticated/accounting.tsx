@@ -20,6 +20,7 @@ import { Badge } from "@/components/ui/badge";
 import { Plus, ArrowUpRight, ArrowDownRight, Wallet, TrendingUp, TrendingDown, Trash2, FileSpreadsheet, FileDown } from "lucide-react";
 import { toast } from "sonner";
 import { useCurrentSchool } from "@/hooks/use-current-school";
+import { formatCurrency } from "@/lib/currency";
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, Legend, CartesianGrid } from "recharts";
 import * as XLSX from "xlsx";
 import jsPDF from "jspdf";
@@ -29,7 +30,7 @@ export const Route = createFileRoute("/_authenticated/accounting")({
   component: AccountingPage,
 });
 
-const fmt = (n: number) => `${Number(n || 0).toLocaleString("fr-FR")} F`;
+const fmt = (n: number) => formatCurrency(n);
 
 function AccountingPage() {
   const qc = useQueryClient();

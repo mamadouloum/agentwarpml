@@ -45,14 +45,14 @@ import {
 import { PLANS } from "@/routes/pricing";
 import { toast } from "sonner";
 import { useCurrentSchool } from "@/hooks/use-current-school";
+import { formatCurrency } from "@/lib/currency";
 
 export const Route = createFileRoute("/_authenticated/billing")({
   component: BillingPage,
 });
 
 const planMeta = (id: string) => PLANS.find((p) => p.id === id);
-const fmt = (n: number, c = "XOF") =>
-  `${Number(n || 0).toLocaleString("fr-FR")} ${c === "XOF" ? "FCFA" : c}`;
+const fmt = (n: number, c: string | null = "XOF") => formatCurrency(n, { currency: c });
 const fmtDate = (d: string | null | undefined) =>
   d
     ? new Date(d).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })

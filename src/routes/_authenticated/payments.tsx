@@ -15,6 +15,7 @@ import { Plus, Loader2, CreditCard } from "lucide-react";
 import { toast } from "sonner";
 import { useCurrentSchool } from "@/hooks/use-current-school";
 import { ExportMenu } from "@/components/export-menu";
+import { formatCurrency } from "@/lib/currency";
 
 export const Route = createFileRoute("/_authenticated/payments")({
   component: PaymentsPage,
@@ -135,8 +136,8 @@ function PaymentsPage() {
                 <TableRow key={inv.id}>
                   <TableCell className="font-medium">{inv.students?.last_name} {inv.students?.first_name}</TableCell>
                   <TableCell>{inv.label}</TableCell>
-                  <TableCell>{Number(inv.amount).toLocaleString("fr-FR")} F</TableCell>
-                  <TableCell className="text-success font-medium">{Number(inv.amount_paid).toLocaleString("fr-FR")} F</TableCell>
+                  <TableCell>{formatCurrency(inv.amount)}</TableCell>
+                  <TableCell className="text-success font-medium">{formatCurrency(inv.amount_paid)}</TableCell>
                   <TableCell><Badge variant={statusVariant[inv.status]}>{statusLabel[inv.status]}</Badge></TableCell>
                   <TableCell>
                     <Dialog open={openPay === inv.id} onOpenChange={(o) => setOpenPay(o ? inv.id : null)}>
